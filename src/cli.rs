@@ -20,13 +20,27 @@ pub struct Command {
 
 pub fn parse_args() -> io::Result<Command> {
     let args: Vec<String> = env::args().collect();
-    let env = String::from("dev");
+    let mut env = String::from("dev");
 
     if args.len() < 2 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
             "No subcommand provided",
         ));
+    }
+
+    for i in 2..args.len() {
+        if args[i] == "--env" {
+            if i + 1 < args.len() {
+                env = args[i + 1].clone();
+                break;
+            } else {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "No value provided for --env",
+                ));
+            }
+        }
     }
 
     let subcommand = match args[1].as_str() {
